@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Силовые нормативы | Bento Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body class="bg-[#0A0A0C] text-neutral-900 antialiased flex justify-center selection:bg-neutral-800 selection:text-white">
+
+  <!-- Контейнер мобильного интерфейса -->
+  <main class="w-full max-w-[430px] min-h-screen px-4 py-5 flex flex-col gap-3.5 pb-10">
+
+    <!-- Блок 1: Заголовок и карточка атлета -->
+    <section class="bg-white rounded-bento p-5 flex flex-col justify-between shadow-sm border border-neutral-100">
+      <div class="flex items-start justify-between gap-2 mb-3">
+        <div>
+          <h1 class="text-2xl font-extrabold tracking-tight text-neutral-950">Силовые нормативы</h1>
+          <p class="text-xs text-neutral-400 font-medium mt-0.5">Bento Performance Calculator</p>
+        </div>
+        <button id="openAthleteModal" class="border border-neutral-200 rounded-full px-3 py-1 text-[11px] font-semibold text-neutral-700 bg-neutral-50 active:scale-95 transition-transform flex items-center gap-1.5 shrink-0">
+          <span id="headerAthleteBadge">16 лет · 70 кг</span>
+          <svg class="w-3 h-3 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 mt-1">
+        <div class="bg-bentoBlue rounded-bento-sm p-3.5 flex flex-col justify-between">
+          <span class="text-[11px] font-medium text-neutral-500 uppercase tracking-wider">Рост</span>
+          <div class="text-xl font-bold text-neutral-900 mt-1" id="athleteHeightDisplay">177 см</div>
+        </div>
+        <div class="bg-bentoCardLight rounded-bento-sm p-3.5 flex flex-col justify-between">
+          <span class="text-[11px] font-medium text-neutral-500 uppercase tracking-wider">Коэффициент</span>
+          <div class="text-xl font-bold text-neutral-900 mt-1" id="athleteCoeffDisplay">0.89 (IPF)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Блок 2: Выбор упражнения -->
+    <section class="bg-bentoDark text-white rounded-bento p-5 shadow-lg border border-neutral-800">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-semibold text-bentoGraySub uppercase tracking-wider">Категория</span>
+        <span class="text-[11px] text-neutral-400" id="exerciseUnitHint">Штанга / Свободный вес</span>
+      </div>
+
+      <!-- Фильтры категорий -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 mb-3.5" id="categoryTabs">
+        <button data-cat="all" class="category-btn active px-3 py-1 rounded-full text-xs font-medium bg-white text-neutral-900 shrink-0 transition-colors">Все</button>
+        <button data-cat="chest" class="category-btn px-3 py-1 rounded-full text-xs font-medium bg-neutral-800 text-neutral-400 shrink-0 transition-colors">Грудь</button>
+        <button data-cat="back" class="category-btn px-3 py-1 rounded-full text-xs font-medium bg-neutral-800 text-neutral-400 shrink-0 transition-colors">Спина</button>
+        <button data-cat="legs" class="category-btn px-3 py-1 rounded-full text-xs font-medium bg-neutral-800 text-neutral-400 shrink-0 transition-colors">Ноги</button>
+        <button data-cat="shoulders" class="category-btn px-3 py-1 rounded-full text-xs font-medium bg-neutral-800 text-neutral-400 shrink-0 transition-colors">Плечи</button>
+      </div>
+
+      <!-- Селектор упражнения -->
+      <label for="exerciseSelect" class="sr-only">Выберите упражнение</label>
+      <div class="relative">
+        <select id="exerciseSelect" class="w-full bg-[#1C1E22] text-white border border-neutral-700 rounded-bento-sm px-4 py-3 text-sm font-semibold appearance-none outline-none focus:border-neutral-400 transition-colors pr-10">
+          <!-- Генерируется из data.js -->
+        </select>
+        <div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Блок 3: Ввод показателей (Калькулятор 1RM) -->
+    <section class="bg-white rounded-bento p-5 shadow-sm border border-neutral-100 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-neutral-100 pb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-neutral-400">Режим ввода</span>
+        <div class="flex bg-neutral-100 p-0.5 rounded-full text-[11px] font-semibold text-neutral-600">
+          <button id="mode1RM" class="px-2.5 py-1 rounded-full bg-white text-neutral-900 shadow-xs transition-all">Разовый максимум</button>
+          <button id="modeReps" class="px-2.5 py-1 rounded-full text-neutral-500 transition-all">Рабочий подход</button>
+        </div>
+      </div>
+
+      <!-- Ввод веса -->
+      <div>
+        <div class="flex items-baseline justify-between mb-2">
+          <span class="text-xs font-semibold text-neutral-500" id="weightLabel">Вес отягощения</span>
+          <div class="flex items-baseline gap-1">
+            <span id="weightValue" class="text-3xl font-extrabold text-neutral-950 tracking-tight">70</span>
+            <span class="text-sm font-semibold text-neutral-400">кг</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="weightMinus" class="w-11 h-11 rounded-2xl bg-neutral-100 active:bg-neutral-200 text-neutral-900 font-bold text-lg flex items-center justify-center shrink-0 touch-manipulation transition-colors">−</button>
+          <input type="range" id="weightRange" min="10" max="250" step="2.5" value="70" class="w-full accent-neutral-900 h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer" />
+          <button id="weightPlus" class="w-11 h-11 rounded-2xl bg-neutral-100 active:bg-neutral-200 text-neutral-900 font-bold text-lg flex items-center justify-center shrink-0 touch-manipulation transition-colors">+</button>
+        </div>
+
+        <!-- Быстрые чипы -->
+        <div class="flex items-center gap-1.5 mt-2.5">
+          <button data-delta="-5" class="quick-chip px-2.5 py-1 rounded-lg bg-neutral-50 text-[11px] font-medium text-neutral-600 border border-neutral-200 active:bg-neutral-100">-5</button>
+          <button data-delta="-2.5" class="quick-chip px-2.5 py-1 rounded-lg bg-neutral-50 text-[11px] font-medium text-neutral-600 border border-neutral-200 active:bg-neutral-100">-2.5</button>
+          <button data-delta="2.5" class="quick-chip px-2.5 py-1 rounded-lg bg-neutral-50 text-[11px] font-medium text-neutral-600 border border-neutral-200 active:bg-neutral-100">+2.5</button>
+          <button data-delta="5" class="quick-chip px-2.5 py-1 rounded-lg bg-neutral-50 text-[11px] font-medium text-neutral-600 border border-neutral-200 active:bg-neutral-100">+5</button>
+        </div>
+      </div>
+
+      <!-- Ввод повторений (активен при режиме рабочего подхода) -->
+      <div id="repsContainer" class="hidden border-t border-neutral-100 pt-3">
+        <div class="flex items-baseline justify-between mb-2">
+          <span class="text-xs font-semibold text-neutral-500">Количество повторений</span>
+          <div class="flex items-baseline gap-1">
+            <span id="repsValue" class="text-3xl font-extrabold text-neutral-950 tracking-tight">8</span>
+            <span class="text-sm font-semibold text-neutral-400">повт</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="repsMinus" class="w-11 h-11 rounded-2xl bg-neutral-100 active:bg-neutral-200 text-neutral-900 font-bold text-lg flex items-center justify-center shrink-0 touch-manipulation transition-colors">−</button>
+          <input type="range" id="repsRange" min="2" max="15" step="1" value="8" class="w-full accent-neutral-900 h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer" />
+          <button id="repsPlus" class="w-11 h-11 rounded-2xl bg-neutral-100 active:bg-neutral-200 text-neutral-900 font-bold text-lg flex items-center justify-center shrink-0 touch-manipulation transition-colors">+</button>
+        </div>
+        <p class="text-[11px] text-neutral-400 mt-2 font-medium">1RM пересчитывается автоматически по формуле Эпли (W × (1 + R/30)).</p>
+      </div>
+    </section>
+
+    <!-- Блок 4: Bento График нормативов (Стиль Projected Revenue)[cite: 1] -->
+    <section class="bg-bentoDark text-white rounded-bento p-5 shadow-lg border border-neutral-800 flex flex-col justify-between">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <h2 class="text-base font-bold text-white">Шкала нормативов</h2>
+          <p class="text-[11px] text-bentoGraySub">Диапазоны 1RM под текущий вес и возраст</p>
+        </div>
+        <div class="border border-neutral-700 rounded-full px-2.5 py-0.5 text-[10px] font-mono text-neutral-300">
+          1RM: <span id="calculated1RMBadge" class="text-white font-bold">70 кг</span>
+        </div>
+      </div>
+
+      <!-- Столбчатый Bento-график[cite: 1] -->
+      <div class="grid grid-cols-4 gap-2 items-end h-44 pt-6 pb-2" id="chartPillars">
+        <!-- Столбик 1: Новичок -->
+        <div class="flex flex-col items-center h-full justify-end group">
+          <span class="text-[10px] font-mono font-semibold mb-1.5 text-neutral-400" id="valNovice">50 кг</span>
+          <div class="w-full bg-[#24272D] rounded-t-2xl rounded-b-lg transition-all duration-300 relative flex items-center justify-center" id="barNovice" style="height: 40%;">
+            <div class="active-indicator hidden absolute -top-1.5 w-3 h-3 bg-white rounded-full border-2 border-bentoDark"></div>
+          </div>
+          <span class="text-[10px] font-semibold mt-2 text-neutral-400 text-center leading-tight">Новичок</span>
+        </div>
+
+        <!-- Столбик 2: Средний -->
+        <div class="flex flex-col items-center h-full justify-end group">
+          <span class="text-[10px] font-mono font-semibold mb-1.5 text-neutral-400" id="valInter">70 кг</span>
+          <div class="w-full bg-[#24272D] rounded-t-2xl rounded-b-lg transition-all duration-300 relative flex items-center justify-center" id="barInter" style="height: 60%;">
+            <div class="active-indicator hidden absolute -top-1.5 w-3 h-3 bg-white rounded-full border-2 border-bentoDark"></div>
+          </div>
+          <span class="text-[10px] font-semibold mt-2 text-neutral-400 text-center leading-tight">Средний</span>
+        </div>
+
+        <!-- Столбик 3: Профи -->
+        <div class="flex flex-col items-center h-full justify-end group">
+          <span class="text-[10px] font-mono font-semibold mb-1.5 text-neutral-400" id="valAdv">95 кг</span>
+          <div class="w-full bg-[#24272D] rounded-t-2xl rounded-b-lg transition-all duration-300 relative flex items-center justify-center" id="barAdv" style="height: 80%;">
+            <div class="active-indicator hidden absolute -top-1.5 w-3 h-3 bg-white rounded-full border-2 border-bentoDark"></div>
+          </div>
+          <span class="text-[10px] font-semibold mt-2 text-neutral-400 text-center leading-tight">Профи</span>
+        </div>
+
+        <!-- Столбик 4: Элита -->
+        <div class="flex flex-col items-center h-full justify-end group">
+          <span class="text-[10px] font-mono font-semibold mb-1.5 text-neutral-400" id="valElite">115 кг</span>
+          <div class="w-full bg-[#24272D] rounded-t-2xl rounded-b-lg transition-all duration-300 relative flex items-center justify-center" id="barElite" style="height: 100%;">
+            <div class="active-indicator hidden absolute -top-1.5 w-3 h-3 bg-white rounded-full border-2 border-bentoDark"></div>
+          </div>
+          <span class="text-[10px] font-semibold mt-2 text-neutral-400 text-center leading-tight">Элита</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Блок 5: Карточка вердикта и прогресса -->
+    <section class="bg-bentoBlue rounded-bento p-5 shadow-sm border border-blue-100 flex flex-col justify-between">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-[11px] font-bold text-bentoBlueAccent uppercase tracking-wider">Текущий результат</span>
+          <h3 class="text-2xl font-black text-neutral-950 mt-0.5" id="userRankTitle">Средний уровень</h3>
+        </div>
+        <div class="bg-white/80 backdrop-blur-xs rounded-full px-3 py-1 border border-blue-200">
+          <span class="text-xs font-bold text-neutral-900" id="userRatioBadge">1.00x веса тела</span>
+        </div>
+      </div>
+
+      <div class="bg-white/90 rounded-bento-sm p-3.5 mt-3 border border-blue-100">
+        <div class="flex items-center justify-between text-xs mb-1.5">
+          <span class="text-neutral-500 font-medium">Прогресс до следующего ранга</span>
+          <span class="font-bold text-neutral-900" id="userNextRankGap">+15 кг до Профи</span>
+        </div>
+        <div class="w-full bg-neutral-200 h-2 rounded-full overflow-hidden">
+          <div id="rankProgressBar" class="bg-neutral-900 h-full rounded-full transition-all duration-300" style="width: 50%;"></div>
+        </div>
+      </div>
+
+      <p class="text-xs text-neutral-600 mt-3 font-medium leading-relaxed" id="coachVerdictText">
+        Хороший рабочий уровень. Достигнут базовый паритет с собственным весом. Фокус на прогрессии нагрузки и технике движения в рабочей амплитуде.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Модальное окно редактирования параметров атлета -->
+  <div id="athleteModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-[430px] rounded-t-bento sm:rounded-bento p-6 shadow-2xl border border-neutral-200 animate-in slide-in-from-bottom duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
+        <h3 class="text-lg font-bold text-neutral-950">Параметры атлета</h3>
+        <button id="closeAthleteModal" class="text-neutral-400 hover:text-neutral-900 p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-4 py-4">
+        <div>
+          <label class="block text-xs font-semibold text-neutral-500 uppercase mb-1">Возраст (лет)</label>
+          <input type="number" id="inputAge" value="16" min="12" max="60" class="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2.5 text-base font-bold outline-none focus:border-neutral-900" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-500 uppercase mb-1">Вес тела (кг)</label>
+          <input type="number" id="inputWeight" value="70" min="40" max="160" step="0.5" class="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2.5 text-base font-bold outline-none focus:border-neutral-900" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-500 uppercase mb-1">Рост (см)</label>
+          <input type="number" id="inputHeight" value="177" min="130" max="220" class="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2.5 text-base font-bold outline-none focus:border-neutral-900" />
+        </div>
+      </div>
+
+      <button id="saveAthleteBtn" class="w-full bg-neutral-950 active:bg-neutral-800 text-white font-bold py-3.5 rounded-bento-sm text-sm transition-colors">
+        Сохранить и пересчитать
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
